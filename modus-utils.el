@@ -63,16 +63,16 @@ TARGET-COLOUR is the RGB hex string (e.g. \"#aabbcc\") to match."
                                  ("cyan"    . ,(p64/get-closest-matching-face-colour "#66eeee"))
                                  ("white"   . ,(p64/get-closest-matching-face-colour "#eeeeee"))))
                     ("bright" . (
-                                 ("black"   . ,(p64/get-closest-matching-face-colour "#666666"))
-                                 ("red"     . ,(p64/get-closest-matching-face-colour "#ff6666"))
-                                 ("green"   . ,(p64/get-closest-matching-face-colour "#66ff66"))
-                                 ("yellow"  . ,(p64/get-closest-matching-face-colour "#ffff66"))
-                                 ("blue"    . ,(p64/get-closest-matching-face-colour "#6666ff"))
-                                 ("magenta" . ,(p64/get-closest-matching-face-colour "#ff66ff"))
-                                 ("cyan"    . ,(p64/get-closest-matching-face-colour "#66ffff"))
+                                 ("black"   . ,(p64/get-closest-matching-face-colour "#555555"))
+                                 ("red"     . ,(p64/get-closest-matching-face-colour "#ff5555"))
+                                 ("green"   . ,(p64/get-closest-matching-face-colour "#55ff55"))
+                                 ("yellow"  . ,(p64/get-closest-matching-face-colour "#ffff55"))
+                                 ("blue"    . ,(p64/get-closest-matching-face-colour "#5555ff"))
+                                 ("magenta" . ,(p64/get-closest-matching-face-colour "#ff55ff"))
+                                 ("cyan"    . ,(p64/get-closest-matching-face-colour "#55ffff"))
                                  ("white"   . ,(p64/get-closest-matching-face-colour "#ffffff"))))
                     ("dim" . (
-                                 ("black"   . ,(p64/get-closest-matching-face-colour "#111111"))
+                                 ("black"   . ,(p64/get-closest-matching-face-colour "#222222"))
                                  ("red"     . ,(p64/get-closest-matching-face-colour "#662222"))
                                  ("green"   . ,(p64/get-closest-matching-face-colour "#226622"))
                                  ("yellow"  . ,(p64/get-closest-matching-face-colour "#666622"))
@@ -129,8 +129,34 @@ such as 'alacritty."
   (let ((exported-string (p64/export-theme export-format)))
     (when exported-string (insert exported-string))))
 
+(defun modus-utils-get-colour (theme-name colour-name)
+"Convert a colour name to hex colour strings from a theme.
+
+THEME-NAME should be either 'operandi or 'vivendi.
+
+COLOUR-NAME should be a colour defined within the specified theme
+ and will be replaced with the equivalent hex colour string."
+
+  (defvar modus-operandi-theme-default-colors-alist)
+  (defvar modus-vivendi-theme-default-colors-alist)
+
+  (catch 'invalid-theme
+    (let ((colour-list
+      (cond
+        ((eq theme-name 'operandi) modus-operandi-theme-default-colors-alist)
+        ((eq theme-name 'vivendi) modus-vivendi-theme-default-colors-alist))))
+
+      (if (not colour-list)
+          (progn
+            (message (concat "Invalid theme name: " (symbol-name theme-name)))
+            (throw 'invalid-theme colour-name)))
+
+      (if (string-match "^#[0-9a-fA-F]+" colour-name)
+          colour-name
+        (alist-get colour-name colour-list nil nil 'string-equal)))))
+
 (defun modus-utils-get-colours (theme-name colour-alist)
-"Convert values in an alist to hex colour strings from a theme.
+  "Convert values in an alist to hex colour strings from a theme.
 
 Take an alist and replace all values with the corresponding hex
 colour string from the appropriate theme.
@@ -142,21 +168,14 @@ values. The values should refer to colours defined within the
 specified theme and will be replaced with hex colour strings. Any
 value which is already a hex string will be returned unmodified."
 
-  (defvar modus-operandi-theme-default-colors-alist)
-  (defvar modus-vivendi-theme-default-colors-alist)
+  ;; Map each (key . val) pair to (key . colour-hex)
+  (mapcar (lambda (list-val)
+            `(
+              ;; Return key as-is
+              ,(car list-val)
 
-  (catch 'invalid-theme
-    (let ((colour-list
-      (cond
-        ((eq theme-name 'operandi) modus-operandi-theme-default-colors-alist)
-        ((eq theme-name 'vivendi) modus-vivendi-theme-default-colors-alist))))
-
-      (if (not colour-list) (throw 'invalid-theme colour-alist))
-
-      ;; Map each (key . val) pair to (key . colour-hex)
-      (mapcar (lambda (list-val)
-                `(,(car list-val) ,(alist-get (cdr list-val) colour-list nil nil 'string-equal)))
-              colour-alist))))
+              ,(modus-utils-get-colour theme-name (cdr list-val))))
+          colour-alist))
 
 (defun modus-utils-export-theme-alacritty (theme-name)
 "Export the modus-(operandi|vivendi) theme for use with Alacritty.
@@ -167,9 +186,6 @@ Requires modus-operandi-theme-default-colors-alist and
 modus-vivendi-theme-default-colors-alist in order to fetch
 currently defined colour hex strings."
 
-  (defvar modus-operandi-theme-default-colors-alist)
-  (defvar modus-vivendi-theme-default-colors-alist)
-
   (let (
     (mappings '(
       ("primary" . (
@@ -179,68 +195,57 @@ currently defined colour hex strings."
         ("text"   . "bg-main")
         ("cursor" . "fg-main")))
       ("normal" . (
-        ("black"   . "bg-main")
+        ("black"   . "#000000")
         ("red"     . "red")
         ("green"   . "green")
         ("yellow"  . "yellow")
         ("blue"    . "blue")
         ("magenta" . "magenta")
         ("cyan"    . "cyan")
-        ("white"   . "fg-main")))
+        ("white"   . "#eeeeee")))
       ("bright" . (
-        ("black"   . "bg-alt")
+        ("black"   . "#555555")
         ("red"     . "red-intense")
         ("green"   . "green-intense")
         ("yellow"  . "yellow-intense")
         ("blue"    . "blue-intense")
         ("magenta" . "magenta-intense")
         ("cyan"    . "cyan-intense")
-        ("white"   . "fg-alt")))
+        ("white"   . "#ffffff")))
       ("dim" . (
-        ("black"   . "bg-dim")
+        ("black"   . "#222222")
         ("red"     . "red-faint")
         ("green"   . "green-faint")
         ("yellow"  . "yellow-faint")
         ("blue"    . "blue-faint")
         ("magenta" . "magenta-faint")
         ("cyan"    . "cyan-faint")
-        ("white"   . "fg-dim")))))
-    (colour-list
-     (cond
-       ((eq theme-name 'operandi) modus-operandi-theme-default-colors-alist)
-       ((eq theme-name 'vivendi) modus-vivendi-theme-default-colors-alist))))
+        ("white"   . "#dddddd"))))))
 
-    (catch 'invalid-theme
+    ;; Return the entire "colors:" section
+    (concat "colors:\n"
 
-      (when (not colour-list) (progn
-        (message (concat "Invalid theme " (symbol-name theme-name)))
-        (throw 'invalid-theme nil)
-      ))
+      ;; Build a string for each section in mappings
+      (string-join (mapcar (lambda (section)
+        (concat "  " (car section) ":\n"
 
-      ;; Return the entire "colors:" section
-      (concat "colors:\n"
+          ;; Build a string for each colour in section
+          (string-join (mapcar (lambda (colour)
 
-        ;; Build a string for each section in mappings
-        (string-join (mapcar (lambda (section)
-          (concat "  " (car section) ":\n"
+            ;; Build a string for this specific colour
+            (concat "    " (car colour) ": "
 
-            ;; Build a string for each colour in section
-            (string-join (mapcar (lambda (colour)
+              ;; Fetch associated colour hex string, replace "#" with "0x" and
+              ;; wrap it in single quotes
+              (concat "'"
+                (replace-regexp-in-string "#" "0x"
+                  (modus-utils-get-colour theme-name (cdr colour)))
+                "'")))
 
-              ;; Build a string for this specific colour
-              (concat "    " (car colour) ": "
-
-                ;; Fetch associated colour hex string, replace "#" with "0x" and
-                ;; wrap it in single quotes
-                (concat "'"
-                  (replace-regexp-in-string "#" "0x"
-                    (alist-get (cdr colour) colour-list nil nil 'string-equal))
-                  "'")))
-
-                (cdr section))
-              "\n")))
-          mappings)
-        "\n")))))
+              (cdr section))
+            "\n")))
+        mappings)
+      "\n"))))
 
 (defun modus-utils-export-theme (theme-name export-format)
 "Export the modus-(operandi|vivendi) theme to a given format.
