@@ -2,12 +2,12 @@
 ;;
 ;; Copyright (C) 2020 Simon Pugnet
 ;;
-;; Author: Simon Pugnet <http://github/polaris64>
+;; Author: Simon Pugnet <https://github.com/polaris64>
 ;; Maintainer: Simon Pugnet <simon@polaris64.net>
 ;; Created: July 25, 2020
 ;; Modified: July 25, 2020
 ;; Version: 0.0.1
-;; Keywords:
+;; Keywords: modus-themes themes
 ;; Homepage: https://github.com/polaris64/modus-utils
 ;; Package-Requires: ((emacs 26.3) (cl-lib "0.5"))
 ;;
@@ -15,7 +15,26 @@
 ;;
 ;;; Commentary:
 ;;
-;;  description
+;; This module provides a set of functions which can be used to export one of
+;; the modus-themes (modus-operandi or modus-vivendi) to another format. The
+;; purpose of this is to allow the themes to be used in other applications that
+;; allow colours to be specified in their configuration files.
+;;
+;; The two main functions are: -
+;;
+;;   * modus-utils-export-theme: returns the theme colour configuration in a
+;;     specified format as a string.
+;;   * modus-utils-insert-theme-colours-at-point: takes the output of the
+;;     previous function and inserts it into the current buffer at the current
+;;     point.
+;;
+;; NOTE: these functions require direct access to the theme's colour tables.
+;; Therefore in order for these functions to work, the requested theme (operandi
+;; or vivendi) must currently be loaded in Emacs.
+;;
+;; The export formats currently supported are: -
+;;
+;;  * 'alacritty: YAML to be placed in the user's alacritty.yml file.
 ;;
 ;;; Code:
 (defun p64/get-closest-matching-face-colour (target-colour)
@@ -43,7 +62,7 @@ TARGET-COLOUR is the RGB hex string (e.g. \"#aabbcc\") to match."
                  '(2))))
 
 (defun p64/export-theme-alacritty ()
-  "Export the current theme for use with Alacritty."
+"Export the current theme for use with Alacritty."
 
   (let (
         (mappings `(
@@ -156,7 +175,7 @@ COLOUR-NAME should be a colour defined within the specified theme
         (alist-get colour-name colour-list nil nil 'string-equal)))))
 
 (defun modus-utils-get-colours (theme-name colour-alist)
-  "Convert values in an alist to hex colour strings from a theme.
+"Convert values in an alist to hex colour strings from a theme.
 
 Take an alist and replace all values with the corresponding hex
 colour string from the appropriate theme.
