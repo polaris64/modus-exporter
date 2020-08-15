@@ -39,30 +39,37 @@
 ;;; Code:
 
 (defun modus-utils-get-colour (theme-name colour-name)
-"Convert a colour name to hex colour strings from a theme.
+"Convert a colour name to a hex colour string from a theme.
 
 THEME-NAME should be either 'operandi or 'vivendi.
 
 COLOUR-NAME should be a colour defined within the specified theme
- and will be replaced with the equivalent hex colour string."
+and will be replaced with the equivalent hex colour string. If it
+is already a hex string it will be returned unmodified."
 
-  (defvar modus-operandi-theme-default-colors-alist)
-  (defvar modus-vivendi-theme-default-colors-alist)
+  (if (string-match "^#[0-9a-fA-F]+" colour-name)
 
-  (catch 'invalid-theme
-    (let ((colour-list
-      (cond
-        ((eq theme-name 'operandi) modus-operandi-theme-default-colors-alist)
-        ((eq theme-name 'vivendi) modus-vivendi-theme-default-colors-alist))))
+      ;; Return colour-name as-is
+      colour-name
 
-      (if (not colour-list)
-          (progn
-            (message (concat "Invalid theme name: " (symbol-name theme-name)))
-            (throw 'invalid-theme colour-name)))
+    ;; Otherwise fetch the hex string from the specified theme
+    (progn
 
-      (if (string-match "^#[0-9a-fA-F]+" colour-name)
-          colour-name
-        (alist-get colour-name colour-list nil nil 'string-equal)))))
+      (defvar modus-operandi-theme-default-colors-alist)
+      (defvar modus-vivendi-theme-default-colors-alist)
+
+      (catch 'invalid-theme
+        (let ((colour-list
+               (cond
+                ((eq theme-name 'operandi) modus-operandi-theme-default-colors-alist)
+                ((eq theme-name 'vivendi) modus-vivendi-theme-default-colors-alist))))
+
+          (if (not colour-list)
+              (progn
+                (message (concat "Invalid theme name: " (symbol-name theme-name)))
+                (throw 'invalid-theme colour-name)))
+
+          (alist-get colour-name colour-list nil nil 'string-equal))))))
 
 (defun modus-utils-get-colours (theme-name colour-alist)
 "Convert values in an alist to hex colour strings from a theme.
@@ -89,11 +96,7 @@ value which is already a hex string will be returned unmodified."
 (defun modus-utils-export-theme-alacritty (theme-name)
 "Export the modus-(operandi|vivendi) theme for use with Alacritty.
 
-THEME-NAME should be either 'operandi or 'vivendi.
-
-Requires modus-operandi-theme-default-colors-alist and
-modus-vivendi-theme-default-colors-alist in order to fetch
-currently defined colour hex strings."
+THEME-NAME should be either 'operandi or 'vivendi."
 
   (let (
     (mappings '(
@@ -165,12 +168,12 @@ EXPORT-FORMAT should be the name of a supported export format,
 such as 'alacritty."
   (catch 'invalid-format
     (let (
-      (mappings '(
-                  (alacritty . modus-utils-export-theme-alacritty))))
+          (mappings '(
+                      (alacritty . modus-utils-export-theme-alacritty))))
       (let ((export-fn (alist-get export-format mappings)))
         (if (not export-fn) (progn
-          (message (concat "Invalid export-format: " (symbol-name export-format)))
-          (throw 'invalid-format nil)))
+                              (message (concat "Invalid export-format: " (symbol-name export-format)))
+                              (throw 'invalid-format nil)))
         (funcall export-fn theme-name)))))
 
 (defun modus-utils-insert-theme-colours-at-point (theme-name export-format)
