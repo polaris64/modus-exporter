@@ -1,4 +1,4 @@
-;;; modus-utils.el --- Utility functions for modus-themes -*- lexical-binding: t; -*-
+;;; modus-exporter.el --- Functions for exporting modus-themes -*- lexical-binding: t; -*-
 ;;
 ;; Copyright (C) 2020 Simon Pugnet
 ;;
@@ -6,9 +6,9 @@
 ;; Maintainer: Simon Pugnet <simon@polaris64.net>
 ;; Created: July 25, 2020
 ;; Modified: July 25, 2020
-;; Version: 0.0.1
-;; Keywords: modus-themes themes
-;; Homepage: https://github.com/polaris64/modus-utils
+;; Version: 0.0.2
+;; Keywords: modus-themes themes exporter
+;; Homepage: https://github.com/polaris64/modus-exporter
 ;; Package-Requires: ((emacs 26.3) (cl-lib "0.5"))
 ;;
 ;; This file is not part of GNU Emacs.
@@ -22,9 +22,9 @@
 ;;
 ;; The two main functions are: -
 ;;
-;;   * modus-utils-export-theme: returns the theme colour configuration in a
+;;   * modus-exporter-export-theme: returns the theme colour configuration in a
 ;;     specified format as a string.
-;;   * modus-utils-insert-theme-colours-at-point: takes the output of the
+;;   * modus-exporter-insert-theme-colours-at-point: takes the output of the
 ;;     previous function and inserts it into the current buffer at the current
 ;;     point.
 ;;
@@ -39,17 +39,17 @@
 ;;; Code:
 
 
-(defvar modus-utils-export-functions
+(defvar modus-exporter-export-functions
   '(
-    (alacritty . modus-utils-export-theme-alacritty))
-  "Defines the export formats known to modus-utils.
+    (alacritty . modus-exporter-export-theme-alacritty))
+  "Defines the export formats known to modus-exporter.
 
 Each value is an alist where the key is the name of the export format (e.g.
 alacritty) and the value is the function responsible for exporting to that
 format.")
 
 
-(defun modus-utils-get-colour (theme-name colour-name)
+(defun modus-exporter-get-colour (theme-name colour-name)
 "Convert a colour name to a hex colour string from a theme.
 
 THEME-NAME should be either 'operandi or 'vivendi.
@@ -82,7 +82,7 @@ is already a hex string it will be returned unmodified."
 
           (alist-get colour-name colour-list nil nil 'string-equal))))))
 
-(defun modus-utils-get-colours (theme-name colour-alist)
+(defun modus-exporter-get-colours (theme-name colour-alist)
 "Convert values in an alist to hex colour strings from a theme.
 
 Take an alist and replace all values with the corresponding hex
@@ -101,10 +101,10 @@ value which is already a hex string will be returned unmodified."
               ;; Return key as-is
               ,(car list-val)
 
-              ,(modus-utils-get-colour theme-name (cdr list-val))))
+              ,(modus-exporter-get-colour theme-name (cdr list-val))))
           colour-alist))
 
-(defun modus-utils-export-theme-alacritty (theme-name)
+(defun modus-exporter-export-theme-alacritty (theme-name)
 "Export the modus-(operandi|vivendi) theme for use with Alacritty.
 
 THEME-NAME should be either 'operandi or 'vivendi."
@@ -162,7 +162,7 @@ THEME-NAME should be either 'operandi or 'vivendi."
               ;; wrap it in single quotes
               (concat "'"
                 (replace-regexp-in-string "#" "0x"
-                  (modus-utils-get-colour theme-name (cdr colour)))
+                  (modus-exporter-get-colour theme-name (cdr colour)))
                 "'")))
 
               (cdr section))
@@ -170,7 +170,7 @@ THEME-NAME should be either 'operandi or 'vivendi."
         mappings)
       "\n"))))
 
-(defun modus-utils-export-theme (theme-name export-format)
+(defun modus-exporter-export-theme (theme-name export-format)
 "Export the modus-(operandi|vivendi) theme to a given format.
 
 THEME-NAME should be either 'operandi or 'vivendi.
@@ -178,13 +178,13 @@ THEME-NAME should be either 'operandi or 'vivendi.
 EXPORT-FORMAT should be the name of a supported export format,
 such as 'alacritty."
   (catch 'invalid-format
-    (let ((export-fn (alist-get export-format modus-utils-export-functions)))
+    (let ((export-fn (alist-get export-format modus-exporter-export-functions)))
       (if (not export-fn) (progn
                             (message (concat "Invalid export-format: " (symbol-name export-format)))
                             (throw 'invalid-format nil)))
       (funcall export-fn theme-name))))
 
-(defun modus-utils-insert-theme-colours-at-point (theme-name export-format)
+(defun modus-exporter-insert-theme-colours-at-point (theme-name export-format)
 "Insert colours from a theme at the current point.
 
 When called interactively, prompt for THEME-NAME and
@@ -198,10 +198,10 @@ such as 'alacritty."
    (list
     (intern (completing-read "Theme name: " '("operandi" "vivendi") nil t))
     (intern (completing-read "Export format: "
-                             (mapcar (lambda (v) (car v)) modus-utils-export-functions) nil t))))
-  (let ((exported-string (modus-utils-export-theme theme-name export-format)))
+                             (mapcar (lambda (v) (car v)) modus-exporter-export-functions) nil t))))
+  (let ((exported-string (modus-exporter-export-theme theme-name export-format)))
     (when exported-string (insert exported-string))))
 
 
-(provide 'modus-utils)
-;;; modus-utils.el ends here
+(provide 'modus-exporter)
+;;; modus-exporter.el ends here
