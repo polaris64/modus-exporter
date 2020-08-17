@@ -38,6 +38,17 @@
 ;;
 ;;; Code:
 
+
+(defvar modus-utils-export-functions
+  '(
+    (alacritty . modus-utils-export-theme-alacritty))
+  "Defines the export formats known to modus-utils.
+
+Each value is an alist where the key is the name of the export format (e.g.
+alacritty) and the value is the function responsible for exporting to that
+format.")
+
+
 (defun modus-utils-get-colour (theme-name colour-name)
 "Convert a colour name to a hex colour string from a theme.
 
@@ -167,25 +178,30 @@ THEME-NAME should be either 'operandi or 'vivendi.
 EXPORT-FORMAT should be the name of a supported export format,
 such as 'alacritty."
   (catch 'invalid-format
-    (let (
-          (mappings '(
-                      (alacritty . modus-utils-export-theme-alacritty))))
-      (let ((export-fn (alist-get export-format mappings)))
-        (if (not export-fn) (progn
-                              (message (concat "Invalid export-format: " (symbol-name export-format)))
-                              (throw 'invalid-format nil)))
-        (funcall export-fn theme-name)))))
+    (let ((export-fn (alist-get export-format modus-utils-export-functions)))
+      (if (not export-fn) (progn
+                            (message (concat "Invalid export-format: " (symbol-name export-format)))
+                            (throw 'invalid-format nil)))
+      (funcall export-fn theme-name))))
 
 (defun modus-utils-insert-theme-colours-at-point (theme-name export-format)
 "Insert colours from a theme at the current point.
+
+When called interactively, prompt for THEME-NAME and
+EXPORT-FORMAT using completion.
 
 THEME-NAME should be either 'operandi or 'vivendi.
 
 EXPORT-FORMAT should be the name of a supported export format,
 such as 'alacritty."
-  (interactive "Stheme name: \nSexport format: ")
+  (interactive
+   (list
+    (intern (completing-read "Theme name: " '("operandi" "vivendi") nil t))
+    (intern (completing-read "Export format: "
+                             (mapcar (lambda (v) (car v)) modus-utils-export-functions) nil t))))
   (let ((exported-string (modus-utils-export-theme theme-name export-format)))
     (when exported-string (insert exported-string))))
+
 
 (provide 'modus-utils)
 ;;; modus-utils.el ends here
