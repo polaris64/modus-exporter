@@ -1,0 +1,22 @@
+#+TITLE: modus-exporter
+
+* Introduction
+=modus-exporter= is an Emacs Lisp library for Emacs and the [[https://gitlab.com/protesilaos/modus-themes][modus-themes]]. The goal of this project is to provide a set of functions allowing these themes to be exported to a variety of formats for other software.
+* Current progress
+This is a very early prototype and as such only includes support for one export format at present: [[https://github.com/alacritty/alacritty][the Alacritty terminal]]. Now that the concept has been proven to work more export formats will be added in due course.
+* Contributions
+Contributions of other export formats by way of pull requests would be greatly appreciated as well as general comments and suggestions for improvement.
+* How to use
+The intended way to use this library is by way of the =modus-exporter-insert-theme-colours-at-point= function. Taking Alacritty as an example, this function can be used to export one of the themes directly to the Alacritty configuration file as follows: -
+
+1. Open alacritty.yml
+2. Navigate to the =colors= section
+3. Delete or otherwise disable the current colour configuration
+4. Place the point at the position at which the new colours should be inserted
+5. Call the above function, specify the theme to export, and finally select the format (=alacritty=).
+
+After following the above steps the selected theme colours should be in =alacritty.yml=. Simply saving the file should activate this new colour theme in all Alacritty terminals.
+
+The procedure for other export formats once created should be the same.
+
+**NOTE**: currently the theme to export must be loaded in Emacs. So for example, if exporting =modus-operandi= then this theme must have been loaded previously via =load-theme=.
