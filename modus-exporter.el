@@ -184,6 +184,7 @@ such as 'alacritty."
                             (throw 'invalid-format nil)))
       (funcall export-fn theme-name))))
 
+;;;###autoload
 (defun modus-exporter-insert-theme-colours-at-point (theme-name export-format)
 "Insert colours from a theme at the current point.
 
