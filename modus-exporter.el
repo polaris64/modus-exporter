@@ -38,6 +38,9 @@
 ;;
 ;;; Code:
 
+(defconst modus-exporter-base
+  (if load-file-name (file-name-directory load-file-name) (file-name-directory buffer-file-name))
+  "Base directory of the modus-exporter library, used for locating exporters")
 
 (defvar modus-exporter-export-functions
   '(
@@ -50,7 +53,7 @@ format.")
 
 
 (defun modus-exporter-get-colour (theme-name colour-name)
-"Convert a colour name to a hex colour string from a theme.
+  "Convert a colour name to a hex colour string from a theme.
 
 THEME-NAME should be either 'operandi or 'vivendi.
 
@@ -83,7 +86,7 @@ is already a hex string it will be returned unmodified."
           (alist-get colour-name colour-list nil nil 'string-equal))))))
 
 (defun modus-exporter-get-colours (theme-name colour-alist)
-"Convert values in an alist to hex colour strings from a theme.
+  "Convert values in an alist to hex colour strings from a theme.
 
 Take an alist and replace all values with the corresponding hex
 colour string from the appropriate theme.
@@ -104,74 +107,8 @@ value which is already a hex string will be returned unmodified."
               ,(modus-exporter-get-colour theme-name (cdr list-val))))
           colour-alist))
 
-(defun modus-exporter-export-theme-alacritty (theme-name)
-"Export the modus-(operandi|vivendi) theme for use with Alacritty.
-
-THEME-NAME should be either 'operandi or 'vivendi."
-
-  (let (
-    (mappings '(
-      ("primary" . (
-        ("background" . "bg-main")
-        ("foreground" . "fg-main")))
-      ("cursor" . (
-        ("text"   . "bg-main")
-        ("cursor" . "fg-main")))
-      ("normal" . (
-        ("black"   . "#000000")
-        ("red"     . "red")
-        ("green"   . "green")
-        ("yellow"  . "yellow")
-        ("blue"    . "blue")
-        ("magenta" . "magenta")
-        ("cyan"    . "cyan")
-        ("white"   . "#eeeeee")))
-      ("bright" . (
-        ("black"   . "#555555")
-        ("red"     . "red-intense")
-        ("green"   . "green-intense")
-        ("yellow"  . "yellow-intense")
-        ("blue"    . "blue-intense")
-        ("magenta" . "magenta-intense")
-        ("cyan"    . "cyan-intense")
-        ("white"   . "#ffffff")))
-      ("dim" . (
-        ("black"   . "#222222")
-        ("red"     . "red-faint")
-        ("green"   . "green-faint")
-        ("yellow"  . "yellow-faint")
-        ("blue"    . "blue-faint")
-        ("magenta" . "magenta-faint")
-        ("cyan"    . "cyan-faint")
-        ("white"   . "#dddddd"))))))
-
-    ;; Return the entire "colors:" section
-    (concat "colors:\n"
-
-      ;; Build a string for each section in mappings
-      (string-join (mapcar (lambda (section)
-        (concat "  " (car section) ":\n"
-
-          ;; Build a string for each colour in section
-          (string-join (mapcar (lambda (colour)
-
-            ;; Build a string for this specific colour
-            (concat "    " (car colour) ": "
-
-              ;; Fetch associated colour hex string, replace "#" with "0x" and
-              ;; wrap it in single quotes
-              (concat "'"
-                (replace-regexp-in-string "#" "0x"
-                  (modus-exporter-get-colour theme-name (cdr colour)))
-                "'")))
-
-              (cdr section))
-            "\n")))
-        mappings)
-      "\n"))))
-
 (defun modus-exporter-export-theme (theme-name export-format)
-"Export the modus-(operandi|vivendi) theme to a given format.
+  "Export the modus-(operandi|vivendi) theme to a given format.
 
 THEME-NAME should be either 'operandi or 'vivendi.
 
@@ -186,7 +123,7 @@ such as 'alacritty."
 
 ;;;###autoload
 (defun modus-exporter-insert-theme-colours-at-point (theme-name export-format)
-"Insert colours from a theme at the current point.
+  "Insert colours from a theme at the current point.
 
 When called interactively, prompt for THEME-NAME and
 EXPORT-FORMAT using completion.
@@ -204,5 +141,17 @@ such as 'alacritty."
     (when exported-string (insert exported-string))))
 
 
+(defun modus-exporter-load-all-exporters ()
+  "Loads and evaluates all Emacs Lisp files in ./exporters"
+  (let* (
+         (base-dir (expand-file-name "exporters" modus-exporter-base))
+         (files (directory-files base-dir nil "\.el$")))
+    (dolist (elt files)
+      (let ((filename (replace-regexp-in-string ".el$" "" (expand-file-name elt base-dir))))
+        (load filename)))))
+
+;; Load all exporters when the package is loaded for the first time
+(when modus-exporter-base (modus-exporter-load-all-exporters))
+
 (provide 'modus-exporter)
-;;; modus-exporter.el ends here
+;;; modus-exporter ends here
