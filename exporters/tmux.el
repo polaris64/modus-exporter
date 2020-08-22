@@ -4,8 +4,6 @@
 ;;;
 ;;; Code:
 
-(require 'modus-exporter)
-
 (defun modus-exporter-export-theme-tmux (theme-name)
   "Export the modus-(operandi|vivendi) theme for use with Tmux.
 
