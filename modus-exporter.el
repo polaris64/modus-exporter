@@ -32,9 +32,10 @@
 ;; Therefore in order for these functions to work, the requested theme (operandi
 ;; or vivendi) must currently be loaded in Emacs.
 ;;
-;; The export formats currently supported are: -
-;;
-;;  * 'alacritty: YAML to be placed in the user's alacritty.yml file.
+;; Export formats are defined by "exporters", which are Emacs Lisp files within
+;; the ./exporters directory. Each exporter must define a function which exports
+;; the specified theme to that format and must add this function to the
+;; modus-exporter-export-functions alist (i.e. (exporter-name . function)).
 ;;
 ;;; Code:
 

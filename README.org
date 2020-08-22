@@ -11,21 +11,29 @@ Simply clone the above Git repository to a local directory and add it to your =l
 (straight-use-package
  '(modus-exporter :type git :host github :repo "polaris64/modus-exporter" :files '("*.el" "exporters")))
 #+end_src
+** In Doom Emacs
+Add the following to =packages.el= in your Doom configuration directory (usually =~/.doom.d/=)
+#+BEGIN_SRC emacs-lisp
+(package! modus-exporter
+  :recipe (:type git :host github :repo "polaris64/modus-exporter" :files ("*.el" "exporters")))
+#+END_SRC
 * Current progress
-This is a very early prototype and as such only includes support for one export format at present: [[https://github.com/alacritty/alacritty][the Alacritty terminal]]. Now that the concept has been proven to work more export formats will be added in due course.
+This is an early prototype and as such only includes support for a couple of export formats at present: [[https://github.com/alacritty/alacritty][the Alacritty terminal]] and [[https://github.com/tmux/tmux/wiki][Tmux]]. Now that the concept has been proven to work more export formats will be added in due course.
 * Contributions
-Contributions of other export formats by way of pull requests would be greatly appreciated as well as general comments and suggestions for improvement.
+Contributions of other exporters by way of pull requests would be greatly appreciated as well as general comments and suggestions for improvement.
+** Adding an exporter
+Simply copy an existing file in the =exporters= directory, give it a unique name and modify it accordingly. Each file in this directory should define a single function which outputs the specified theme in the new format and register that function in the =modus-exporter-export-functions= alist with a unique name.
 * How to use
 The intended way to use this library is by way of the =modus-exporter-insert-theme-colours-at-point= function. Taking Alacritty as an example, this function can be used to export one of the themes directly to the Alacritty configuration file as follows: -
 
-1. Open alacritty.yml
-2. Navigate to the =colors= section
-3. Delete or otherwise disable the current colour configuration
-4. Place the point at the position at which the new colours should be inserted
+1. Open alacritty.yml;
+2. Navigate to the =colors= section;
+3. Delete or otherwise disable the current colour configuration;
+4. Place the point at the position at which the new colours should be inserted; and
 5. Call the above function, specify the theme to export, and finally select the format (=alacritty=).
 
 After following the above steps the selected theme colours should be in =alacritty.yml=. Simply saving the file should activate this new colour theme in all Alacritty terminals.
 
 The procedure for other export formats once created should be the same.
 
-**NOTE**: currently the theme to export must be loaded in Emacs. So for example, if exporting =modus-operandi= then this theme must have been loaded previously via =load-theme=.
+*NOTE*: currently the theme to export must be loaded in Emacs. So for example, if exporting =modus-operandi= then this theme must have been loaded previously via =load-theme=. If the theme is not loaded then calling an export function specifying this theme will cause an error.
