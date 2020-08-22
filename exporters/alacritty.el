@@ -1,4 +1,10 @@
-;;; .local/straight/repos/modus-exporter/exporters/alacritty.el -*- lexical-binding: t; -*-
+;;; alacritty.el --- An Alacritty modus-exporter library -*- lexical-binding: t; -*-
+;;; Commentary:
+;;; This file is part of modus-exporter
+;;;
+;;; Code:
+
+(require 'modus-exporter)
 
 (defun modus-exporter-export-theme-alacritty (theme-name)
   "Export the modus-(operandi|vivendi) theme for use with Alacritty.
@@ -45,11 +51,11 @@ THEME-NAME should be either 'operandi or 'vivendi."
     (concat "colors:\n"
 
       ;; Build a string for each section in mappings
-      (string-join (mapcar (lambda (section)
+      (mapconcat (lambda (section)
         (concat "  " (car section) ":\n"
 
           ;; Build a string for each colour in section
-          (string-join (mapcar (lambda (colour)
+          (mapconcat (lambda (colour)
 
             ;; Build a string for this specific colour
             (concat "    " (car colour) ": "
@@ -61,11 +67,14 @@ THEME-NAME should be either 'operandi or 'vivendi."
                   (modus-exporter-get-colour theme-name (cdr colour)))
                 "'")))
 
-              (cdr section))
+              (cdr section)
             "\n")))
-        mappings)
+        mappings
       "\n"))))
 
 ;; Add the exporter function to the list under 'alacritty
+(defvar modus-exporter-export-functions '())
 (unless (alist-get 'alacritty modus-exporter-export-functions)
-        (add-to-list 'modus-exporter-export-functions '(alacritty . modus-exporter-export-theme-alacritty)))
+        (add-to-list 'modus-exporter-export-functions '(alacritty . modus-exporter-export-theme-alacritty) t))
+
+;;; alacritty.el ends here
