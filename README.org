@@ -2,6 +2,15 @@
 
 * Introduction
 =modus-exporter= is an Emacs Lisp library for Emacs and the [[https://gitlab.com/protesilaos/modus-themes][modus-themes]]. The goal of this project is to provide a set of functions allowing these themes to be exported to a variety of formats for other software.
+* Installation
+Currently this library is only available via the GitHub repository at https://github.com/polaris64/modus-exporter. Once the library is more fully-featured I intend also to host it via ELPA and MELPA.
+** Manually
+Simply clone the above Git repository to a local directory and add it to your =load-path=. Then make sure to ~(require 'modus-exporter)~ before using it.
+** Via =straight.el=
+#+begin_src emacs-lisp
+(straight-use-package
+ '(modus-exporter :type git :host github :repo "polaris64/modus-exporter" :files '("*.el" "exporters")))
+#+end_src
 * Current progress
 This is a very early prototype and as such only includes support for one export format at present: [[https://github.com/alacritty/alacritty][the Alacritty terminal]]. Now that the concept has been proven to work more export formats will be added in due course.
 * Contributions

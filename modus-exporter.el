@@ -40,11 +40,10 @@
 
 (defconst modus-exporter-base
   (if load-file-name (file-name-directory load-file-name) (file-name-directory buffer-file-name))
-  "Base directory of the modus-exporter library, used for locating exporters")
+  "Base directory of the modus-exporter library, used for locating exporters.")
 
-(defvar modus-exporter-export-functions
-  '(
-    (alacritty . modus-exporter-export-theme-alacritty))
+;;;###autoload
+(defvar modus-exporter-export-functions '()
   "Defines the export formats known to modus-exporter.
 
 Each value is an alist where the key is the name of the export format (e.g.
@@ -142,7 +141,7 @@ such as 'alacritty."
 
 
 (defun modus-exporter-load-all-exporters ()
-  "Loads and evaluates all Emacs Lisp files in ./exporters"
+  "Load and evaluate all Emacs Lisp files in ./exporters."
   (let* (
          (base-dir (expand-file-name "exporters" modus-exporter-base))
          (files (directory-files base-dir nil "\.el$")))
