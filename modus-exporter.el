@@ -71,19 +71,27 @@ is already a hex string it will be returned unmodified."
 
       (defvar modus-operandi-theme-default-colors-alist)
       (defvar modus-vivendi-theme-default-colors-alist)
+      (defvar modus-operandi-theme-override-colors-alist)
+      (defvar modus-vivendi-theme-override-colors-alist)
 
       (catch 'invalid-theme
-        (let ((colour-list
-               (cond
-                ((eq theme-name 'operandi) modus-operandi-theme-default-colors-alist)
-                ((eq theme-name 'vivendi) modus-vivendi-theme-default-colors-alist))))
+        (let (
+              (colour-list (cond
+                            ((eq theme-name 'operandi) modus-operandi-theme-default-colors-alist)
+                            ((eq theme-name 'vivendi) modus-vivendi-theme-default-colors-alist)))
+              (override-colour-list (cond
+                            ((eq theme-name 'operandi) modus-operandi-theme-override-colors-alist)
+                            ((eq theme-name 'vivendi) modus-vivendi-theme-override-colors-alist))))
 
           (if (not colour-list)
               (progn
                 (message (concat "Invalid theme name: " (symbol-name theme-name)))
                 (throw 'invalid-theme colour-name)))
 
-          (alist-get colour-name colour-list nil nil 'string-equal))))))
+          (let (
+                (default-colour (alist-get colour-name colour-list nil nil 'string-equal))
+                (override-colour (if override-colour-list (alist-get colour-name override-colour-list nil nil 'string-equal) nil)))
+            (or override-colour default-colour)))))))
 
 (defun modus-exporter-get-colours (theme-name colour-alist)
   "Convert values in an alist to hex colour strings from a theme.
