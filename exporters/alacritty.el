@@ -20,7 +20,7 @@ THEME-NAME should be either 'operandi or 'vivendi."
       ("normal" . (
         ("black"   . "#000000")
         ("red"     . "red")
-        ("green"   . "green")
+        ("green"   . "green-intense")
         ("yellow"  . "yellow")
         ("blue"    . "blue")
         ("magenta" . "magenta")
@@ -28,21 +28,21 @@ THEME-NAME should be either 'operandi or 'vivendi."
         ("white"   . "#eeeeee")))
       ("bright" . (
         ("black"   . "#555555")
-        ("red"     . "red-intense")
-        ("green"   . "green-intense")
-        ("yellow"  . "yellow-intense")
-        ("blue"    . "blue-intense")
-        ("magenta" . "magenta-intense")
-        ("cyan"    . "cyan-intense")
-        ("white"   . "#ffffff")))
-      ("dim" . (
-        ("black"   . "#222222")
         ("red"     . "red-faint")
         ("green"   . "green-faint")
         ("yellow"  . "yellow-faint")
         ("blue"    . "blue-faint")
         ("magenta" . "magenta-faint")
         ("cyan"    . "cyan-faint")
+        ("white"   . "#ffffff")))
+      ("dim" . (
+        ("black"   . "#222222")
+        ("red"     . "red-intense")
+        ("green"   . "green-intense")
+        ("yellow"  . "yellow-intense")
+        ("blue"    . "blue-intense")
+        ("magenta" . "magenta-intense")
+        ("cyan"    . "cyan-intense")
         ("white"   . "#dddddd"))))))
 
     ;; Return the entire "colors:" section
