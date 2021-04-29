@@ -1,5 +1,12 @@
 #+TITLE: modus-exporter
 
+* Important note
+This library was created before version 1.0 of =modus-themes=. Since then a lot of changes have been made which make this library incompatible with newer versions.
+
+Protesilaos Stavrou (the creator of `modus-themes` has now [[https://protesilaos.com/codelog/2021-02-22-modus-themes-exporter/][released his own exporter]], so please use that instead of this project.
+
+
+
 * Introduction
 =modus-exporter= is an Emacs Lisp library for Emacs and the [[https://gitlab.com/protesilaos/modus-themes][modus-themes]]. The goal of this project is to provide a set of functions allowing these themes to be exported to a variety of formats for other software.
 * Installation
