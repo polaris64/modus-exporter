@@ -3,7 +3,7 @@
 * Important note
 This library was created before version 1.0 of =modus-themes=. Since then a lot of changes have been made which make this library incompatible with newer versions.
 
-Protesilaos Stavrou (the creator of `modus-themes` has now [[https://protesilaos.com/codelog/2021-02-22-modus-themes-exporter/][released his own exporter]], so please use that instead of this project.
+Protesilaos Stavrou (the creator of =modus-themes= has now [[https://protesilaos.com/codelog/2021-02-22-modus-themes-exporter/][released his own exporter]], so please use that instead of this project.
 
 
 
